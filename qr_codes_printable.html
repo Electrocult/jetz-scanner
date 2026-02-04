@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JETZ QR Codes - Printable</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         @media print {
             .no-print { display: none !important; }
@@ -31,6 +30,7 @@
             cursor: pointer;
             margin: 10px;
         }
+        .no-print button:hover { background: #00b8e6; }
         
         .print-section {
             background: white;
@@ -82,7 +82,9 @@
             margin-bottom: 15px;
         }
         
-        .product-card canvas {
+        .product-card .qr-img {
+            width: 150px;
+            height: 150px;
             margin: 10px auto;
             display: block;
         }
@@ -141,7 +143,9 @@
             margin: 10px 0;
         }
         
-        .badge-card canvas {
+        .badge-card .qr-img {
+            width: 120px;
+            height: 120px;
             margin: 10px auto;
             display: block;
         }
@@ -163,74 +167,74 @@
 <body>
     <!-- Header (not printed) -->
     <div class="no-print">
-        <h1>🏷️ JETZ QR Codes Generator</h1>
+        <h1>ЁЯП╖я╕П JETZ QR Codes Generator</h1>
         <p>Print QR codes untuk produk dan badge SPG</p>
-        <button onclick="window.print()">🖨️ Print All</button>
-        <button onclick="printSection('products')">Print Products Only</button>
-        <button onclick="printSection('badges')">Print Badges Only</button>
+        <button onclick="window.print()">ЁЯЦия╕П Print All</button>
     </div>
     
     <!-- Product QR Codes -->
     <div class="print-section" id="products">
-        <h1 class="section-title">📦 PRODUCT QR CODES</h1>
+        <h1 class="section-title">ЁЯУж PRODUCT QR CODES</h1>
         <p style="text-align: center; color: #666; margin-bottom: 20px;">
             Tempel di setiap paket produk untuk quick scan
         </p>
         
         <div class="product-grid">
-            <!-- Paket A - Multiple copies -->
+            <!-- Paket A - Copy 1 -->
             <div class="product-card paket-a">
                 <h2>PAKET A</h2>
                 <div class="price">Rp 50.000</div>
-                <canvas id="qr-paket-a-1"></canvas>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=JETZ-PAKET-A&bgcolor=ffffff&color=1a1a2e" alt="QR Paket A">
                 <div class="instruction">Scan untuk input penjualan</div>
                 <div class="contents">
-                    • JetZ Sweet Chocolate 65gr<br>
-                    • JetZ Tortilla Roasted Corn 140gr<br>
-                    • JetZ Tortilla Beef BBQ 20gr<br>
-                    • JetZ Croissant Chocolate 50gr<br>
-                    • 🎁 Sling Bag JetZ x Si_Nopal
+                    тАв JetZ Sweet Chocolate 65gr<br>
+                    тАв JetZ Tortilla Roasted Corn 140gr<br>
+                    тАв JetZ Tortilla Beef BBQ 20gr<br>
+                    тАв JetZ Croissant Chocolate 50gr<br>
+                    тАв ЁЯОБ Sling Bag JetZ x Si_Nopal
                 </div>
             </div>
             
+            <!-- Paket A - Copy 2 -->
             <div class="product-card paket-a">
                 <h2>PAKET A</h2>
                 <div class="price">Rp 50.000</div>
-                <canvas id="qr-paket-a-2"></canvas>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=JETZ-PAKET-A&bgcolor=ffffff&color=1a1a2e" alt="QR Paket A">
                 <div class="instruction">Scan untuk input penjualan</div>
                 <div class="contents">
-                    • JetZ Sweet Chocolate 65gr<br>
-                    • JetZ Tortilla Roasted Corn 140gr<br>
-                    • JetZ Tortilla Beef BBQ 20gr<br>
-                    • JetZ Croissant Chocolate 50gr<br>
-                    • 🎁 Sling Bag JetZ x Si_Nopal
+                    тАв JetZ Sweet Chocolate 65gr<br>
+                    тАв JetZ Tortilla Roasted Corn 140gr<br>
+                    тАв JetZ Tortilla Beef BBQ 20gr<br>
+                    тАв JetZ Croissant Chocolate 50gr<br>
+                    тАв ЁЯОБ Sling Bag JetZ x Si_Nopal
                 </div>
             </div>
             
-            <!-- Paket B - Multiple copies -->
+            <!-- Paket B - Copy 1 -->
             <div class="product-card paket-b">
                 <h2>PAKET B</h2>
                 <div class="price">Rp 30.000</div>
-                <canvas id="qr-paket-b-1"></canvas>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=JETZ-PAKET-B&bgcolor=ffffff&color=1a1a2e" alt="QR Paket B">
                 <div class="instruction">Scan untuk input penjualan</div>
                 <div class="contents">
-                    • JetZ Sweet Chocolate 18gr<br>
-                    • JetZ Croissant Chocolate 15gr<br>
-                    • JetZ Tortilla Beef BBQ 20gr<br>
-                    • 🎁 Hand Bag JetZ x Si_Nopal
+                    тАв JetZ Sweet Chocolate 18gr<br>
+                    тАв JetZ Croissant Chocolate 15gr<br>
+                    тАв JetZ Tortilla Beef BBQ 20gr<br>
+                    тАв ЁЯОБ Hand Bag JetZ x Si_Nopal
                 </div>
             </div>
             
+            <!-- Paket B - Copy 2 -->
             <div class="product-card paket-b">
                 <h2>PAKET B</h2>
                 <div class="price">Rp 30.000</div>
-                <canvas id="qr-paket-b-2"></canvas>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=JETZ-PAKET-B&bgcolor=ffffff&color=1a1a2e" alt="QR Paket B">
                 <div class="instruction">Scan untuk input penjualan</div>
                 <div class="contents">
-                    • JetZ Sweet Chocolate 18gr<br>
-                    • JetZ Croissant Chocolate 15gr<br>
-                    • JetZ Tortilla Beef BBQ 20gr<br>
-                    • 🎁 Hand Bag JetZ x Si_Nopal
+                    тАв JetZ Sweet Chocolate 18gr<br>
+                    тАв JetZ Croissant Chocolate 15gr<br>
+                    тАв JetZ Tortilla Beef BBQ 20gr<br>
+                    тАв ЁЯОБ Hand Bag JetZ x Si_Nopal
                 </div>
             </div>
         </div>
@@ -240,7 +244,7 @@
     
     <!-- SPG & Crew Badges -->
     <div class="print-section" id="badges">
-        <h1 class="section-title">🎫 TEAM BADGES</h1>
+        <h1 class="section-title">ЁЯОл TEAM BADGES</h1>
         <p style="text-align: center; color: #666; margin-bottom: 20px;">
             Gunakan sebagai ID badge dan quick login
         </p>
@@ -249,112 +253,92 @@
             <!-- Team Leader -->
             <div class="badge-card tl">
                 <div class="logo">JetZ</div>
-                <div class="role">👑 TEAM LEADER</div>
-                <canvas id="qr-tl-risna"></canvas>
+                <div class="role">ЁЯСС TEAM LEADER</div>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=JETZ-TL-RISNA&bgcolor=ffffff&color=6c5ce7" alt="QR Risna">
                 <div class="name">RISNA</div>
                 <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
             </div>
             
-            <!-- SPG Badges -->
+            <!-- SPG 1 - Yuli -->
             <div class="badge-card">
                 <div class="logo">JetZ</div>
-                <div class="role">🛒 SPG</div>
-                <canvas id="qr-spg-yuli"></canvas>
+                <div class="role">ЁЯЫТ SPG</div>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=JETZ-SPG-YULI&bgcolor=ffffff&color=1a1a2e" alt="QR Yuli">
                 <div class="name">YULI</div>
                 <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
             </div>
             
+            <!-- SPG 2 - Malika -->
             <div class="badge-card">
                 <div class="logo">JetZ</div>
-                <div class="role">🛒 SPG</div>
-                <canvas id="qr-spg-malika"></canvas>
+                <div class="role">ЁЯЫТ SPG</div>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=JETZ-SPG-MALIKA&bgcolor=ffffff&color=1a1a2e" alt="QR Malika">
                 <div class="name">MALIKA</div>
                 <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
             </div>
             
+            <!-- SPG 3 - Wati -->
             <div class="badge-card">
                 <div class="logo">JetZ</div>
-                <div class="role">🛒 SPG</div>
-                <canvas id="qr-spg-wati"></canvas>
+                <div class="role">ЁЯЫТ SPG</div>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=JETZ-SPG-WATI&bgcolor=ffffff&color=1a1a2e" alt="QR Wati">
                 <div class="name">WATI</div>
                 <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
             </div>
             
+            <!-- SPG 4 - Friska -->
             <div class="badge-card">
                 <div class="logo">JetZ</div>
-                <div class="role">🛒 SPG</div>
-                <canvas id="qr-spg-friska"></canvas>
+                <div class="role">ЁЯЫТ SPG</div>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=JETZ-SPG-FRISKA&bgcolor=ffffff&color=1a1a2e" alt="QR Friska">
                 <div class="name">FRISKA</div>
                 <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
             </div>
             
+            <!-- SPG 5 - Etrik -->
             <div class="badge-card">
                 <div class="logo">JetZ</div>
-                <div class="role">🛒 SPG</div>
-                <canvas id="qr-spg-etrik"></canvas>
+                <div class="role">ЁЯЫТ SPG</div>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=JETZ-SPG-ETRIK&bgcolor=ffffff&color=1a1a2e" alt="QR Etrik">
                 <div class="name">ETRIK</div>
                 <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
             </div>
             
+            <!-- SPG 6 - Eka -->
             <div class="badge-card">
                 <div class="logo">JetZ</div>
-                <div class="role">🛒 SPG</div>
-                <canvas id="qr-spg-eka"></canvas>
+                <div class="role">ЁЯЫТ SPG</div>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=JETZ-SPG-EKA&bgcolor=ffffff&color=1a1a2e" alt="QR Eka">
                 <div class="name">EKA</div>
                 <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
             </div>
             
-            <!-- Crew Badges -->
+            <!-- Crew 1 - Yadi -->
             <div class="badge-card crew">
                 <div class="logo">JetZ</div>
-                <div class="role">🎁 SAMPLING CREW</div>
-                <canvas id="qr-crew-yadi"></canvas>
+                <div class="role">ЁЯОБ SAMPLING CREW</div>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=JETZ-CREW-YADI&bgcolor=ffffff&color=ff9f43" alt="QR Yadi">
                 <div class="name">YADI</div>
                 <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
             </div>
             
+            <!-- Crew 2 - Iswanto -->
             <div class="badge-card crew">
                 <div class="logo">JetZ</div>
-                <div class="role">🎁 SAMPLING CREW</div>
-                <canvas id="qr-crew-iswanto"></canvas>
+                <div class="role">ЁЯОБ SAMPLING CREW</div>
+                <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=JETZ-CREW-ISWANTO&bgcolor=ffffff&color=ff9f43" alt="QR Iswanto">
                 <div class="name">ISWANTO</div>
                 <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
             </div>
         </div>
     </div>
     
-    <script>
-        // Generate QR Codes
-        const qrOptions = {
-            width: 150,
-            margin: 1,
-            color: { dark: '#1a1a2e', light: '#ffffff' }
-        };
-        
-        // Product QR Codes
-        QRCode.toCanvas(document.getElementById('qr-paket-a-1'), 'JETZ-PAKET-A', qrOptions);
-        QRCode.toCanvas(document.getElementById('qr-paket-a-2'), 'JETZ-PAKET-A', qrOptions);
-        QRCode.toCanvas(document.getElementById('qr-paket-b-1'), 'JETZ-PAKET-B', qrOptions);
-        QRCode.toCanvas(document.getElementById('qr-paket-b-2'), 'JETZ-PAKET-B', qrOptions);
-        
-        // Team Badges
-        QRCode.toCanvas(document.getElementById('qr-tl-risna'), 'JETZ-TL-RISNA', { ...qrOptions, width: 120 });
-        QRCode.toCanvas(document.getElementById('qr-spg-yuli'), 'JETZ-SPG-YULI', { ...qrOptions, width: 120 });
-        QRCode.toCanvas(document.getElementById('qr-spg-malika'), 'JETZ-SPG-MALIKA', { ...qrOptions, width: 120 });
-        QRCode.toCanvas(document.getElementById('qr-spg-wati'), 'JETZ-SPG-WATI', { ...qrOptions, width: 120 });
-        QRCode.toCanvas(document.getElementById('qr-spg-friska'), 'JETZ-SPG-FRISKA', { ...qrOptions, width: 120 });
-        QRCode.toCanvas(document.getElementById('qr-spg-etrik'), 'JETZ-SPG-ETRIK', { ...qrOptions, width: 120 });
-        QRCode.toCanvas(document.getElementById('qr-spg-eka'), 'JETZ-SPG-EKA', { ...qrOptions, width: 120 });
-        QRCode.toCanvas(document.getElementById('qr-crew-yadi'), 'JETZ-CREW-YADI', { ...qrOptions, width: 120 });
-        QRCode.toCanvas(document.getElementById('qr-crew-iswanto'), 'JETZ-CREW-ISWANTO', { ...qrOptions, width: 120 });
-        
-        function printSection(section) {
-            const allSections = document.querySelectorAll('.print-section');
-            allSections.forEach(s => s.style.display = 'none');
-            document.getElementById(section).style.display = 'block';
-            window.print();
-            allSections.forEach(s => s.style.display = 'block');
-        }
-    </script>
+    <div class="no-print" style="margin-top: 30px; padding: 20px;">
+        <h3>ЁЯУЛ Instruksi Print:</h3>
+        <p style="margin-top: 10px;">1. Klik tombol "Print All" di atas</p>
+        <p>2. Pilih printer atau "Save as PDF"</p>
+        <p>3. Potong sesuai garis border</p>
+        <p>4. Laminating untuk badge tim</p>
+    </div>
 </body>
 </html>
