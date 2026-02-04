@@ -113,64 +113,86 @@
         .btn-cancel { background: #666; color: white; }
         .btn-add { background: #00d4ff; color: #1a1a2e; }
         
-        /* QRIS Photo Capture */
+        /* ==========================================
+           FIXED: QRIS Photo Capture - Compact Layout
+           ========================================== */
         .photo-capture {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.95);
+            background: #1a1a2e;
             z-index: 2000;
             flex-direction: column;
-            padding: 20px;
         }
         .photo-capture.active { display: flex; }
+        
         .photo-capture-header {
             text-align: center;
-            padding: 15px;
+            padding: 12px 15px;
             background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            border-radius: 15px;
-            margin-bottom: 15px;
+            flex-shrink: 0;
         }
-        .photo-capture-header h2 { font-size: 20px; margin-bottom: 5px; }
-        .photo-capture-header p { font-size: 12px; opacity: 0.9; }
+        .photo-capture-header h2 { font-size: 18px; margin-bottom: 3px; }
+        .photo-capture-header p { font-size: 11px; opacity: 0.9; }
+        
         .camera-container {
             flex: 1;
             display: flex;
             flex-direction: column;
+            padding: 15px;
+            min-height: 0; /* Important for flex shrink */
+        }
+        
+        .camera-preview-wrapper {
+            flex: 1;
+            display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
+            min-height: 0;
+            max-height: 50vh; /* Limit camera height to 50% of viewport */
+            margin-bottom: 15px;
         }
+        
         #photoVideo {
             width: 100%;
-            max-width: 400px;
-            border-radius: 15px;
+            height: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
             border: 3px solid #9b59b6;
         }
+        
         #photoCanvas {
             display: none;
         }
-        .photo-preview {
+        
+        #photoPreview {
             display: none;
             width: 100%;
-            max-width: 400px;
-            border-radius: 15px;
+            height: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
             border: 3px solid #4ecdc4;
         }
-        .photo-preview.active { display: block; }
+        #photoPreview.active { display: block; }
+        
+        .photo-controls {
+            flex-shrink: 0;
+            padding: 10px 0;
+        }
+        
         .photo-actions {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
-            width: 100%;
-            max-width: 400px;
+            margin-bottom: 10px;
         }
         .photo-actions button {
             flex: 1;
-            padding: 18px;
+            padding: 16px;
             border: none;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
         }
@@ -178,11 +200,12 @@
         .btn-retake { background: #e74c3c; color: white; }
         .btn-use-photo { background: #4ecdc4; color: #1a1a2e; }
         .btn-skip-photo { background: #666; color: white; }
+        
         .photo-status {
             text-align: center;
-            margin-top: 15px;
-            font-size: 14px;
+            font-size: 13px;
             color: #aaa;
+            padding: 5px;
         }
         
         .quick-section {
@@ -447,25 +470,31 @@
             </div>
         </div>
         
-        <!-- QRIS Photo Capture -->
+        <!-- FIXED: QRIS Photo Capture - Compact Layout -->
         <div class="photo-capture" id="photoCapture">
             <div class="photo-capture-header">
                 <h2>📸 Foto Bukti QRIS</h2>
                 <p>Arahkan kamera ke layar HP pembeli yang menunjukkan pembayaran QRIS berhasil</p>
             </div>
+            
             <div class="camera-container">
-                <video id="photoVideo" autoplay playsinline></video>
-                <canvas id="photoCanvas"></canvas>
-                <img id="photoPreview" class="photo-preview" alt="Preview">
-                <div class="photo-actions" id="photoCaptureActions">
-                    <button class="btn-skip-photo" id="btnSkipPhoto">Skip</button>
-                    <button class="btn-capture" id="btnCapture">📸 Ambil Foto</button>
+                <div class="camera-preview-wrapper">
+                    <video id="photoVideo" autoplay playsinline></video>
+                    <canvas id="photoCanvas"></canvas>
+                    <img id="photoPreview" alt="Preview">
                 </div>
-                <div class="photo-actions" id="photoReviewActions" style="display: none;">
-                    <button class="btn-retake" id="btnRetake">🔄 Ulang</button>
-                    <button class="btn-use-photo" id="btnUsePhoto">✓ Gunakan Foto</button>
+                
+                <div class="photo-controls">
+                    <div class="photo-actions" id="photoCaptureActions">
+                        <button class="btn-skip-photo" id="btnSkipPhoto">Skip</button>
+                        <button class="btn-capture" id="btnCapture">📸 Ambil Foto</button>
+                    </div>
+                    <div class="photo-actions" id="photoReviewActions" style="display: none;">
+                        <button class="btn-retake" id="btnRetake">🔄 Ulang</button>
+                        <button class="btn-use-photo" id="btnUsePhoto">✓ Gunakan</button>
+                    </div>
+                    <div class="photo-status" id="photoStatus">Siap mengambil foto</div>
                 </div>
-                <div class="photo-status" id="photoStatus">Siap mengambil foto</div>
             </div>
         </div>
         
@@ -531,14 +560,12 @@
             history: [],
             scannerPaused: false,
             currentScan: { type: null, qty: 1 },
-            qrisPhoto: null, // Base64 photo data
-            qrisPhotoUrl: null // Google Drive URL after upload
+            qrisPhoto: null,
+            qrisPhotoUrl: null
         };
         
-        // Photo capture elements
         let photoStream = null;
         
-        // Load from localStorage
         const savedState = localStorage.getItem('jetzSalesState_v3');
         if (savedState) {
             const parsed = JSON.parse(savedState);
@@ -550,7 +577,6 @@
             }
         }
         
-        // DOM Elements
         const spgGrid = document.getElementById('spgGrid');
         const statsBar = document.getElementById('statsBar');
         const modeToggle = document.getElementById('modeToggle');
@@ -571,14 +597,12 @@
         
         let html5QrCode = null;
         
-        // Initialize
         function init() {
             updateStats();
             updateHistory();
             if (state.spg) selectSPG(state.spg);
         }
         
-        // SPG Selection
         spgGrid.addEventListener('click', (e) => {
             if (e.target.classList.contains('spg-btn')) {
                 selectSPG(e.target.dataset.spg);
@@ -598,7 +622,6 @@
             saveState();
         }
         
-        // Mode Toggle
         modeToggle.addEventListener('click', (e) => {
             if (e.target.classList.contains('mode-btn')) {
                 const mode = e.target.dataset.mode;
@@ -618,11 +641,9 @@
             }
         });
         
-        // Quick Buttons
         document.getElementById('btnPaketA').addEventListener('click', () => showQtyPopup('A'));
         document.getElementById('btnPaketB').addEventListener('click', () => showQtyPopup('B'));
         
-        // Quantity Popup
         function showQtyPopup(type) {
             state.currentScan = { type: type, qty: 1 };
             document.getElementById('scanResultBox').className = 'scan-result-box paket-' + type.toLowerCase();
@@ -668,7 +689,6 @@
             vibrate([100, 50, 100]);
         });
         
-        // Counter Buttons
         document.querySelectorAll('.counter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const paket = btn.dataset.paket;
@@ -679,7 +699,6 @@
             });
         });
         
-        // Payment Selection
         document.querySelectorAll('.payment-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const payment = btn.dataset.payment;
@@ -689,11 +708,9 @@
                     b.classList.toggle('active', b.dataset.payment === payment);
                 });
                 
-                // If QRIS selected, open camera for photo
                 if (payment === 'QRIS') {
                     openPhotoCapture();
                 } else {
-                    // Clear any existing QRIS photo if switching to Cash
                     state.qrisPhoto = null;
                     state.qrisPhotoUrl = null;
                     updateQrisPhotoStatus();
@@ -704,7 +721,7 @@
         });
         
         // ==========================================
-        // QRIS PHOTO CAPTURE FUNCTIONS
+        // QRIS PHOTO CAPTURE
         // ==========================================
         
         async function openPhotoCapture() {
@@ -723,7 +740,6 @@
             } catch (err) {
                 console.error('Camera error:', err);
                 showStatus('❌ Tidak dapat mengakses kamera. Lanjut tanpa foto.', 'error');
-                // Continue without photo
             }
         }
         
@@ -736,31 +752,26 @@
             photoVideo.srcObject = null;
         }
         
-        // Capture photo
         document.getElementById('btnCapture').addEventListener('click', () => {
             photoCanvas.width = photoVideo.videoWidth;
             photoCanvas.height = photoVideo.videoHeight;
             const ctx = photoCanvas.getContext('2d');
             ctx.drawImage(photoVideo, 0, 0);
             
-            // Convert to base64
             const imageData = photoCanvas.toDataURL('image/jpeg', 0.8);
             state.qrisPhoto = imageData;
             
-            // Show preview
             photoPreview.src = imageData;
             photoPreview.classList.add('active');
             photoVideo.style.display = 'none';
             
-            // Switch buttons
             document.getElementById('photoCaptureActions').style.display = 'none';
             document.getElementById('photoReviewActions').style.display = 'flex';
-            document.getElementById('photoStatus').textContent = '✅ Foto diambil - Review sebelum menyimpan';
+            document.getElementById('photoStatus').textContent = '✅ Foto diambil';
             
             vibrate([50, 50, 50]);
         });
         
-        // Retake photo
         document.getElementById('btnRetake').addEventListener('click', () => {
             state.qrisPhoto = null;
             photoPreview.classList.remove('active');
@@ -770,7 +781,6 @@
             document.getElementById('photoStatus').textContent = 'Siap mengambil foto';
         });
         
-        // Use photo
         document.getElementById('btnUsePhoto').addEventListener('click', () => {
             closePhotoCapture();
             updateQrisPhotoStatus();
@@ -778,7 +788,6 @@
             updateSubmitButton();
         });
         
-        // Skip photo
         document.getElementById('btnSkipPhoto').addEventListener('click', () => {
             state.qrisPhoto = null;
             closePhotoCapture();
@@ -789,7 +798,7 @@
         function updateQrisPhotoStatus() {
             const statusEl = document.getElementById('qrisPhotoStatus');
             if (state.qrisPhoto) {
-                statusEl.textContent = '📸 Foto tersimpan';
+                statusEl.textContent = '📸 Foto OK';
                 btnQris.classList.add('qris-has-photo');
             } else {
                 statusEl.textContent = '';
@@ -797,7 +806,6 @@
             }
         }
         
-        // Update Functions
         function updateSaleDisplay() {
             document.getElementById('countA').textContent = state.paketA;
             document.getElementById('countB').textContent = state.paketB;
@@ -834,7 +842,6 @@
             `).join('');
         }
         
-        // Submit Transaction
         submitBtn.addEventListener('click', submitTransaction);
         
         async function submitTransaction() {
@@ -850,14 +857,14 @@
                 total: (state.paketA * 50000) + (state.paketB * 30000),
                 payment: state.payment,
                 hasPhoto: state.qrisPhoto !== null,
-                photo: state.qrisPhoto // Base64 image data
+                photo: state.qrisPhoto
             };
             
             submitBtn.textContent = '⏳ Menyimpan...';
             submitBtn.disabled = true;
             
             if (state.qrisPhoto) {
-                showStatus('📤 Mengupload foto ke Google Drive...', 'uploading');
+                showStatus('📤 Mengupload foto...', 'uploading');
             }
             
             try {
@@ -867,14 +874,12 @@
                 state.todayStats.paketB += state.paketB;
                 state.todayStats.revenue += transaction.total;
                 
-                // Add to history (without base64 to save localStorage space)
                 state.history.push({
                     ...transaction,
-                    photo: null, // Don't store base64 in history
+                    photo: null,
                     photoUrl: result.photoUrl || null
                 });
                 
-                // Reset
                 state.paketA = 0;
                 state.paketB = 0;
                 state.payment = null;
@@ -900,12 +905,10 @@
             updateSubmitButton();
         }
         
-        // Google Sheets Integration with Photo Upload
         async function sendToGoogleSheets(data) {
             const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6lBXDkvp7AIQ8mtdZwOkRqMnlOIbcoaLTR_CLLWgIvucW7yKAXx9pCdw6j4sCwf47/exec';
             
             if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbx6lBXDkvp7AIQ8mtdZwOkRqMnlOIbcoaLTR_CLLWgIvucW7yKAXx9pCdw6j4sCwf47/exec') {
-                // Demo mode - simulate success
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 return { success: true, photoUrl: null };
             }
@@ -920,7 +923,6 @@
             return { success: true };
         }
         
-        // QR Scanner
         function startScanner() {
             if (html5QrCode) return;
             html5QrCode = new Html5Qrcode("reader");
@@ -949,12 +951,11 @@
             if (type) {
                 state.scannerPaused = true;
                 scannerStatus.className = 'scanner-status paused';
-                scannerStatus.textContent = '⏸️ Scanner dijeda - Pilih jumlah';
+                scannerStatus.textContent = '⏸️ Scanner dijeda';
                 showQtyPopup(type);
             }
         }
         
-        // Helpers
         function formatRupiah(amount) {
             return 'Rp ' + amount.toLocaleString('id-ID');
         }
@@ -983,7 +984,7 @@
                 date: new Date().toDateString(),
                 spg: state.spg,
                 todayStats: state.todayStats,
-                history: state.history.map(h => ({ ...h, photo: null })) // Don't save base64
+                history: state.history.map(h => ({ ...h, photo: null }))
             }));
         }
         
