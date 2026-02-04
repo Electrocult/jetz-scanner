@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JETZ Sales Scanner</title>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header p { font-size: 12px; opacity: 0.9; }
+        
+        /* SPG Selection */
+        .spg-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .spg-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .spg-btn {
+            padding: 15px 10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            background: transparent;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .spg-btn.active {
+            background: #00d4ff;
+            border-color: #00d4ff;
+            color: #1a1a2e;
+        }
+        .spg-btn:hover { border-color: #00d4ff; }
+        
+        /* Scanner */
+        .scanner-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .scanner-section.active { display: block; }
+        #reader { width: 100%; border-radius: 10px; overflow: hidden; }
+        #reader video { border-radius: 10px; }
+        
+        /* Quick Buttons */
+        .quick-section {
+            display: none;
+            margin-bottom: 15px;
+        }
+        .quick-section.active { display: block; }
+        .quick-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .quick-btn {
+            padding: 30px 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .quick-btn.paket-a {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+            color: white;
+        }
+        .quick-btn.paket-b {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+        }
+        .quick-btn:active { transform: scale(0.95); }
+        .quick-btn small { display: block; font-size: 12px; opacity: 0.8; margin-top: 5px; }
+        
+        /* Current Sale */
+        .sale-display {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .sale-display.active { display: block; }
+        .sale-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sale-row:last-child { border-bottom: none; }
+        .sale-label { font-size: 14px; opacity: 0.8; }
+        .sale-value { font-size: 18px; font-weight: bold; }
+        .sale-value.total { color: #00d4ff; font-size: 24px; }
+        
+        /* Counter Controls */
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .counter-btn.minus { background: #ff6b6b; color: white; }
+        .counter-btn.plus { background: #4ecdc4; color: white; }
+        .counter-btn:active { transform: scale(0.9); }
+        .counter-value {
+            font-size: 24px;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        /* Payment Section */
+        .payment-section {
+            display: none;
+            margin-bottom: 15px;
+        }
+        .payment-section.active { display: block; }
+        .payment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .payment-btn {
+            padding: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            background: transparent;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .payment-btn.active {
+            background: #00d4ff;
+            border-color: #00d4ff;
+            color: #1a1a2e;
+        }
+        
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+        .submit-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .submit-btn:not(:disabled):active { transform: scale(0.98); }
+        
+        /* History */
+        .history-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        .history-title {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+        .history-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .history-item .time { opacity: 0.6; }
+        .history-item .amount { color: #00d4ff; font-weight: bold; }
+        
+        /* Status Messages */
+        .status {
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .status.success { display: block; background: rgba(78, 205, 196, 0.3); }
+        .status.error { display: block; background: rgba(255, 107, 107, 0.3); }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px 10px;
+            text-align: center;
+        }
+        .stat-value { font-size: 20px; font-weight: bold; color: #00d4ff; }
+        .stat-label { font-size: 10px; opacity: 0.7; margin-top: 5px; }
+        
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 15px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-btn.active {
+            background: #00d4ff;
+            color: #1a1a2e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🛒 JETZ Sales</h1>
+            <p>Brand Activation | 5-6 Feb 2026</p>
+        </div>
+        
+        <!-- SPG Selection -->
+        <div class="spg-section">
+            <div style="font-size: 14px; opacity: 0.8; margin-bottom: 5px;">Pilih SPG:</div>
+            <div class="spg-grid" id="spgGrid">
+                <button class="spg-btn" data-spg="Yuli">Yuli</button>
+                <button class="spg-btn" data-spg="Malika">Malika</button>
+                <button class="spg-btn" data-spg="Wati">Wati</button>
+                <button class="spg-btn" data-spg="Friska">Friska</button>
+                <button class="spg-btn" data-spg="Etrik">Etrik</button>
+                <button class="spg-btn" data-spg="Eka">Eka</button>
+            </div>
+        </div>
+        
+        <!-- Stats Bar -->
+        <div class="stats-bar" id="statsBar" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-value" id="statPaketA">0</div>
+                <div class="stat-label">Paket A</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statPaketB">0</div>
+                <div class="stat-label">Paket B</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statRevenue">0</div>
+                <div class="stat-label">Revenue (K)</div>
+            </div>
+        </div>
+        
+        <!-- Mode Toggle -->
+        <div class="mode-toggle" id="modeToggle" style="display: none;">
+            <button class="mode-btn active" data-mode="quick">⚡ Quick Tap</button>
+            <button class="mode-btn" data-mode="scan">📷 Scan QR</button>
+        </div>
+        
+        <!-- Quick Buttons Mode -->
+        <div class="quick-section" id="quickSection">
+            <div class="quick-grid">
+                <button class="quick-btn paket-a" id="btnPaketA">
+                    📦 PAKET A
+                    <small>Rp 50,000</small>
+                </button>
+                <button class="quick-btn paket-b" id="btnPaketB">
+                    📦 PAKET B
+                    <small>Rp 30,000</small>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Scanner Mode -->
+        <div class="scanner-section" id="scannerSection">
+            <div id="reader"></div>
+            <p style="text-align: center; margin-top: 10px; font-size: 12px; opacity: 0.7;">
+                Arahkan kamera ke QR Code produk
+            </p>
+        </div>
+        
+        <!-- Current Sale Display -->
+        <div class="sale-display" id="saleDisplay">
+            <div class="sale-row">
+                <span class="sale-label">Paket A (Rp 50K)</span>
+                <div class="counter">
+                    <button class="counter-btn minus" data-paket="A">−</button>
+                    <span class="counter-value" id="countA">0</span>
+                    <button class="counter-btn plus" data-paket="A">+</button>
+                </div>
+            </div>
+            <div class="sale-row">
+                <span class="sale-label">Paket B (Rp 30K)</span>
+                <div class="counter">
+                    <button class="counter-btn minus" data-paket="B">−</button>
+                    <span class="counter-value" id="countB">0</span>
+                    <button class="counter-btn plus" data-paket="B">+</button>
+                </div>
+            </div>
+            <div class="sale-row">
+                <span class="sale-label">TOTAL</span>
+                <span class="sale-value total" id="totalAmount">Rp 0</span>
+            </div>
+        </div>
+        
+        <!-- Payment Selection -->
+        <div class="payment-section" id="paymentSection">
+            <div style="font-size: 14px; opacity: 0.8; margin-bottom: 10px;">Metode Bayar:</div>
+            <div class="payment-grid">
+                <button class="payment-btn" data-payment="QRIS">📱 QRIS</button>
+                <button class="payment-btn" data-payment="Cash">💵 Cash</button>
+            </div>
+        </div>
+        
+        <!-- Submit Button -->
+        <button class="submit-btn" id="submitBtn" disabled>
+            ✅ SIMPAN TRANSAKSI
+        </button>
+        
+        <!-- Status Message -->
+        <div class="status" id="statusMsg"></div>
+        
+        <!-- History -->
+        <div class="history-section">
+            <div class="history-title">📋 Riwayat Hari Ini</div>
+            <div id="historyList">
+                <div style="text-align: center; opacity: 0.5; padding: 20px;">
+                    Belum ada transaksi
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // State
+        let state = {
+            spg: null,
+            paketA: 0,
+            paketB: 0,
+            payment: null,
+            mode: 'quick',
+            todayStats: { paketA: 0, paketB: 0, revenue: 0 },
+            history: []
+        };
+        
+        // Load from localStorage
+        const savedState = localStorage.getItem('jetzSalesState');
+        if (savedState) {
+            const parsed = JSON.parse(savedState);
+            // Only restore today's data
+            const today = new Date().toDateString();
+            if (parsed.date === today) {
+                state.todayStats = parsed.todayStats;
+                state.history = parsed.history;
+                state.spg = parsed.spg;
+            }
+        }
+        
+        // DOM Elements
+        const spgGrid = document.getElementById('spgGrid');
+        const statsBar = document.getElementById('statsBar');
+        const modeToggle = document.getElementById('modeToggle');
+        const quickSection = document.getElementById('quickSection');
+        const scannerSection = document.getElementById('scannerSection');
+        const saleDisplay = document.getElementById('saleDisplay');
+        const paymentSection = document.getElementById('paymentSection');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMsg = document.getElementById('statusMsg');
+        const historyList = document.getElementById('historyList');
+        
+        let html5QrCode = null;
+        
+        // Initialize
+        function init() {
+            updateStats();
+            updateHistory();
+            
+            if (state.spg) {
+                selectSPG(state.spg);
+            }
+        }
+        
+        // SPG Selection
+        spgGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('spg-btn')) {
+                selectSPG(e.target.dataset.spg);
+            }
+        });
+        
+        function selectSPG(spgName) {
+            state.spg = spgName;
+            document.querySelectorAll('.spg-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.spg === spgName);
+            });
+            statsBar.style.display = 'grid';
+            modeToggle.style.display = 'flex';
+            quickSection.classList.add('active');
+            saleDisplay.classList.add('active');
+            paymentSection.classList.add('active');
+            saveState();
+        }
+        
+        // Mode Toggle
+        modeToggle.addEventListener('click', (e) => {
+            if (e.target.classList.contains('mode-btn')) {
+                const mode = e.target.dataset.mode;
+                state.mode = mode;
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.mode === mode);
+                });
+                
+                if (mode === 'scan') {
+                    quickSection.classList.remove('active');
+                    scannerSection.classList.add('active');
+                    startScanner();
+                } else {
+                    scannerSection.classList.remove('active');
+                    quickSection.classList.add('active');
+                    stopScanner();
+                }
+            }
+        });
+        
+        // Quick Buttons
+        document.getElementById('btnPaketA').addEventListener('click', () => addPaket('A'));
+        document.getElementById('btnPaketB').addEventListener('click', () => addPaket('B'));
+        
+        function addPaket(type) {
+            if (type === 'A') state.paketA++;
+            else state.paketB++;
+            updateSaleDisplay();
+            vibrate();
+        }
+        
+        // Counter Buttons
+        document.querySelectorAll('.counter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const paket = btn.dataset.paket;
+                const isPlus = btn.classList.contains('plus');
+                
+                if (paket === 'A') {
+                    state.paketA = Math.max(0, state.paketA + (isPlus ? 1 : -1));
+                } else {
+                    state.paketB = Math.max(0, state.paketB + (isPlus ? 1 : -1));
+                }
+                updateSaleDisplay();
+            });
+        });
+        
+        // Payment Selection
+        document.querySelectorAll('.payment-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.payment = btn.dataset.payment;
+                document.querySelectorAll('.payment-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.payment === state.payment);
+                });
+                updateSubmitButton();
+            });
+        });
+        
+        // Update Functions
+        function updateSaleDisplay() {
+            document.getElementById('countA').textContent = state.paketA;
+            document.getElementById('countB').textContent = state.paketB;
+            const total = (state.paketA * 50000) + (state.paketB * 30000);
+            document.getElementById('totalAmount').textContent = formatRupiah(total);
+            updateSubmitButton();
+        }
+        
+        function updateSubmitButton() {
+            const hasItems = state.paketA > 0 || state.paketB > 0;
+            const hasPayment = state.payment !== null;
+            submitBtn.disabled = !(hasItems && hasPayment);
+        }
+        
+        function updateStats() {
+            document.getElementById('statPaketA').textContent = state.todayStats.paketA;
+            document.getElementById('statPaketB').textContent = state.todayStats.paketB;
+            document.getElementById('statRevenue').textContent = Math.round(state.todayStats.revenue / 1000);
+        }
+        
+        function updateHistory() {
+            if (state.history.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; opacity: 0.5; padding: 20px;">Belum ada transaksi</div>';
+                return;
+            }
+            
+            historyList.innerHTML = state.history.slice(-5).reverse().map(item => `
+                <div class="history-item">
+                    <span class="time">${item.time}</span> - 
+                    A:${item.paketA} B:${item.paketB} 
+                    <span class="amount">${formatRupiah(item.total)}</span>
+                    (${item.payment})
+                </div>
+            `).join('');
+        }
+        
+        // Submit Transaction
+        submitBtn.addEventListener('click', submitTransaction);
+        
+        async function submitTransaction() {
+            if (submitBtn.disabled) return;
+            
+            const transaction = {
+                timestamp: new Date().toISOString(),
+                time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                spg: state.spg,
+                hari: getEventDay(),
+                paketA: state.paketA,
+                paketB: state.paketB,
+                total: (state.paketA * 50000) + (state.paketB * 30000),
+                payment: state.payment
+            };
+            
+            // Show loading
+            submitBtn.textContent = '⏳ Menyimpan...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Send to Google Sheets
+                await sendToGoogleSheets(transaction);
+                
+                // Update local stats
+                state.todayStats.paketA += state.paketA;
+                state.todayStats.paketB += state.paketB;
+                state.todayStats.revenue += transaction.total;
+                state.history.push(transaction);
+                
+                // Reset current sale
+                state.paketA = 0;
+                state.paketB = 0;
+                state.payment = null;
+                document.querySelectorAll('.payment-btn').forEach(b => b.classList.remove('active'));
+                
+                // Update UI
+                updateSaleDisplay();
+                updateStats();
+                updateHistory();
+                saveState();
+                
+                // Show success
+                showStatus('✅ Transaksi berhasil disimpan!', 'success');
+                vibrate([100, 50, 100]);
+                
+            } catch (error) {
+                showStatus('❌ Gagal menyimpan. Coba lagi.', 'error');
+                console.error(error);
+            }
+            
+            submitBtn.textContent = '✅ SIMPAN TRANSAKSI';
+            updateSubmitButton();
+        }
+        
+        // Google Sheets Integration
+        async function sendToGoogleSheets(data) {
+            // Replace with your Google Apps Script Web App URL
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6lBXDkvp7AIQ8mtdZwOkRqMnlOIbcoaLTR_CLLWgIvucW7yKAXx9pCdw6j4sCwf47/exec';
+            
+            // For demo/offline mode, just simulate success
+            if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbx6lBXDkvp7AIQ8mtdZwOkRqMnlOIbcoaLTR_CLLWgIvucW7yKAXx9pCdw6j4sCwf47/exec') {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return { success: true };
+            }
+            
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            return { success: true };
+        }
+        
+        // QR Scanner
+        function startScanner() {
+            if (html5QrCode) return;
+            
+            html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                onScanSuccess,
+                onScanFailure
+            );
+        }
+        
+        function stopScanner() {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode = null;
+                });
+            }
+        }
+        
+        function onScanSuccess(decodedText) {
+            // QR Code format: JETZ-A or JETZ-B
+            if (decodedText === 'JETZ-PAKET-A' || decodedText === 'JETZ-A') {
+                addPaket('A');
+                showStatus('📦 Paket A ditambahkan!', 'success');
+            } else if (decodedText === 'JETZ-PAKET-B' || decodedText === 'JETZ-B') {
+                addPaket('B');
+                showStatus('📦 Paket B ditambahkan!', 'success');
+            }
+        }
+        
+        function onScanFailure(error) {
+            // Ignore scan failures
+        }
+        
+        // Helpers
+        function formatRupiah(amount) {
+            return 'Rp ' + amount.toLocaleString('id-ID');
+        }
+        
+        function getEventDay() {
+            const today = new Date();
+            // Event: 5-6 Feb 2026
+            if (today.getDate() === 5) return 'Hari 1';
+            if (today.getDate() === 6) return 'Hari 2';
+            return 'Hari 1'; // Default for testing
+        }
+        
+        function showStatus(message, type) {
+            statusMsg.textContent = message;
+            statusMsg.className = 'status ' + type;
+            setTimeout(() => {
+                statusMsg.className = 'status';
+            }, 3000);
+        }
+        
+        function vibrate(pattern = 50) {
+            if (navigator.vibrate) {
+                navigator.vibrate(pattern);
+            }
+        }
+        
+        function saveState() {
+            localStorage.setItem('jetzSalesState', JSON.stringify({
+                date: new Date().toDateString(),
+                spg: state.spg,
+                todayStats: state.todayStats,
+                history: state.history
+            }));
+        }
+        
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

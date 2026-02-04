@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JETZ QR Codes - Printable</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .page-break { page-break-after: always; }
+            body { margin: 0; padding: 0; }
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        
+        .no-print {
+            background: #1a1a2e;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .no-print h1 { margin-bottom: 10px; }
+        .no-print button {
+            background: #00d4ff;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        .print-section {
+            background: white;
+            padding: 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #00d4ff;
+        }
+        
+        /* Product QR Codes */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .product-card {
+            border: 3px solid #333;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            background: white;
+        }
+        
+        .product-card.paket-a { border-color: #ff6b6b; }
+        .product-card.paket-b { border-color: #4ecdc4; }
+        
+        .product-card h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        .product-card.paket-a h2 { color: #ff6b6b; }
+        .product-card.paket-b h2 { color: #4ecdc4; }
+        
+        .product-card .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .product-card canvas {
+            margin: 10px auto;
+            display: block;
+        }
+        
+        .product-card .instruction {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .product-card .contents {
+            font-size: 11px;
+            color: #888;
+            margin-top: 10px;
+            text-align: left;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        /* SPG Badge Cards */
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .badge-card {
+            border: 2px solid #1a1a2e;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            background: white;
+        }
+        
+        .badge-card .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+        
+        .badge-card .role {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .badge-card .name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin: 10px 0;
+        }
+        
+        .badge-card canvas {
+            margin: 10px auto;
+            display: block;
+        }
+        
+        .badge-card .event-info {
+            font-size: 10px;
+            color: #888;
+            margin-top: 10px;
+        }
+        
+        /* Crew Badges */
+        .badge-card.crew { border-color: #ff9f43; }
+        .badge-card.crew .role { color: #ff9f43; }
+        
+        .badge-card.tl { border-color: #6c5ce7; }
+        .badge-card.tl .role { color: #6c5ce7; }
+    </style>
+</head>
+<body>
+    <!-- Header (not printed) -->
+    <div class="no-print">
+        <h1>🏷️ JETZ QR Codes Generator</h1>
+        <p>Print QR codes untuk produk dan badge SPG</p>
+        <button onclick="window.print()">🖨️ Print All</button>
+        <button onclick="printSection('products')">Print Products Only</button>
+        <button onclick="printSection('badges')">Print Badges Only</button>
+    </div>
+    
+    <!-- Product QR Codes -->
+    <div class="print-section" id="products">
+        <h1 class="section-title">📦 PRODUCT QR CODES</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">
+            Tempel di setiap paket produk untuk quick scan
+        </p>
+        
+        <div class="product-grid">
+            <!-- Paket A - Multiple copies -->
+            <div class="product-card paket-a">
+                <h2>PAKET A</h2>
+                <div class="price">Rp 50.000</div>
+                <canvas id="qr-paket-a-1"></canvas>
+                <div class="instruction">Scan untuk input penjualan</div>
+                <div class="contents">
+                    • JetZ Sweet Chocolate 65gr<br>
+                    • JetZ Tortilla Roasted Corn 140gr<br>
+                    • JetZ Tortilla Beef BBQ 20gr<br>
+                    • JetZ Croissant Chocolate 50gr<br>
+                    • 🎁 Sling Bag JetZ x Si_Nopal
+                </div>
+            </div>
+            
+            <div class="product-card paket-a">
+                <h2>PAKET A</h2>
+                <div class="price">Rp 50.000</div>
+                <canvas id="qr-paket-a-2"></canvas>
+                <div class="instruction">Scan untuk input penjualan</div>
+                <div class="contents">
+                    • JetZ Sweet Chocolate 65gr<br>
+                    • JetZ Tortilla Roasted Corn 140gr<br>
+                    • JetZ Tortilla Beef BBQ 20gr<br>
+                    • JetZ Croissant Chocolate 50gr<br>
+                    • 🎁 Sling Bag JetZ x Si_Nopal
+                </div>
+            </div>
+            
+            <!-- Paket B - Multiple copies -->
+            <div class="product-card paket-b">
+                <h2>PAKET B</h2>
+                <div class="price">Rp 30.000</div>
+                <canvas id="qr-paket-b-1"></canvas>
+                <div class="instruction">Scan untuk input penjualan</div>
+                <div class="contents">
+                    • JetZ Sweet Chocolate 18gr<br>
+                    • JetZ Croissant Chocolate 15gr<br>
+                    • JetZ Tortilla Beef BBQ 20gr<br>
+                    • 🎁 Hand Bag JetZ x Si_Nopal
+                </div>
+            </div>
+            
+            <div class="product-card paket-b">
+                <h2>PAKET B</h2>
+                <div class="price">Rp 30.000</div>
+                <canvas id="qr-paket-b-2"></canvas>
+                <div class="instruction">Scan untuk input penjualan</div>
+                <div class="contents">
+                    • JetZ Sweet Chocolate 18gr<br>
+                    • JetZ Croissant Chocolate 15gr<br>
+                    • JetZ Tortilla Beef BBQ 20gr<br>
+                    • 🎁 Hand Bag JetZ x Si_Nopal
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="page-break"></div>
+    
+    <!-- SPG & Crew Badges -->
+    <div class="print-section" id="badges">
+        <h1 class="section-title">🎫 TEAM BADGES</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">
+            Gunakan sebagai ID badge dan quick login
+        </p>
+        
+        <div class="badge-grid">
+            <!-- Team Leader -->
+            <div class="badge-card tl">
+                <div class="logo">JetZ</div>
+                <div class="role">👑 TEAM LEADER</div>
+                <canvas id="qr-tl-risna"></canvas>
+                <div class="name">RISNA</div>
+                <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
+            </div>
+            
+            <!-- SPG Badges -->
+            <div class="badge-card">
+                <div class="logo">JetZ</div>
+                <div class="role">🛒 SPG</div>
+                <canvas id="qr-spg-yuli"></canvas>
+                <div class="name">YULI</div>
+                <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
+            </div>
+            
+            <div class="badge-card">
+                <div class="logo">JetZ</div>
+                <div class="role">🛒 SPG</div>
+                <canvas id="qr-spg-malika"></canvas>
+                <div class="name">MALIKA</div>
+                <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
+            </div>
+            
+            <div class="badge-card">
+                <div class="logo">JetZ</div>
+                <div class="role">🛒 SPG</div>
+                <canvas id="qr-spg-wati"></canvas>
+                <div class="name">WATI</div>
+                <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
+            </div>
+            
+            <div class="badge-card">
+                <div class="logo">JetZ</div>
+                <div class="role">🛒 SPG</div>
+                <canvas id="qr-spg-friska"></canvas>
+                <div class="name">FRISKA</div>
+                <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
+            </div>
+            
+            <div class="badge-card">
+                <div class="logo">JetZ</div>
+                <div class="role">🛒 SPG</div>
+                <canvas id="qr-spg-etrik"></canvas>
+                <div class="name">ETRIK</div>
+                <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
+            </div>
+            
+            <div class="badge-card">
+                <div class="logo">JetZ</div>
+                <div class="role">🛒 SPG</div>
+                <canvas id="qr-spg-eka"></canvas>
+                <div class="name">EKA</div>
+                <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
+            </div>
+            
+            <!-- Crew Badges -->
+            <div class="badge-card crew">
+                <div class="logo">JetZ</div>
+                <div class="role">🎁 SAMPLING CREW</div>
+                <canvas id="qr-crew-yadi"></canvas>
+                <div class="name">YADI</div>
+                <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
+            </div>
+            
+            <div class="badge-card crew">
+                <div class="logo">JetZ</div>
+                <div class="role">🎁 SAMPLING CREW</div>
+                <canvas id="qr-crew-iswanto"></canvas>
+                <div class="name">ISWANTO</div>
+                <div class="event-info">Brand Activation | 5-6 Feb 2026</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Generate QR Codes
+        const qrOptions = {
+            width: 150,
+            margin: 1,
+            color: { dark: '#1a1a2e', light: '#ffffff' }
+        };
+        
+        // Product QR Codes
+        QRCode.toCanvas(document.getElementById('qr-paket-a-1'), 'JETZ-PAKET-A', qrOptions);
+        QRCode.toCanvas(document.getElementById('qr-paket-a-2'), 'JETZ-PAKET-A', qrOptions);
+        QRCode.toCanvas(document.getElementById('qr-paket-b-1'), 'JETZ-PAKET-B', qrOptions);
+        QRCode.toCanvas(document.getElementById('qr-paket-b-2'), 'JETZ-PAKET-B', qrOptions);
+        
+        // Team Badges
+        QRCode.toCanvas(document.getElementById('qr-tl-risna'), 'JETZ-TL-RISNA', { ...qrOptions, width: 120 });
+        QRCode.toCanvas(document.getElementById('qr-spg-yuli'), 'JETZ-SPG-YULI', { ...qrOptions, width: 120 });
+        QRCode.toCanvas(document.getElementById('qr-spg-malika'), 'JETZ-SPG-MALIKA', { ...qrOptions, width: 120 });
+        QRCode.toCanvas(document.getElementById('qr-spg-wati'), 'JETZ-SPG-WATI', { ...qrOptions, width: 120 });
+        QRCode.toCanvas(document.getElementById('qr-spg-friska'), 'JETZ-SPG-FRISKA', { ...qrOptions, width: 120 });
+        QRCode.toCanvas(document.getElementById('qr-spg-etrik'), 'JETZ-SPG-ETRIK', { ...qrOptions, width: 120 });
+        QRCode.toCanvas(document.getElementById('qr-spg-eka'), 'JETZ-SPG-EKA', { ...qrOptions, width: 120 });
+        QRCode.toCanvas(document.getElementById('qr-crew-yadi'), 'JETZ-CREW-YADI', { ...qrOptions, width: 120 });
+        QRCode.toCanvas(document.getElementById('qr-crew-iswanto'), 'JETZ-CREW-ISWANTO', { ...qrOptions, width: 120 });
+        
+        function printSection(section) {
+            const allSections = document.querySelectorAll('.print-section');
+            allSections.forEach(s => s.style.display = 'none');
+            document.getElementById(section).style.display = 'block';
+            window.print();
+            allSections.forEach(s => s.style.display = 'block');
+        }
+    </script>
+</body>
+</html>
